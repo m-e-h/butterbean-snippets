@@ -17,6 +17,7 @@ $dir_path = bbs_get_dir_path();
 
 require_once $dir_path . 'address/customizer.php';
 require_once $dir_path . 'address/metaboxes.php';
+require_once $dir_path . 'flatpickr/metaboxes.php';
 require_once $dir_path . 'oembed/class-control-oembed.php';
 
 function bbs_get_dir_path() {
@@ -36,4 +37,7 @@ function bbs_scripts() {
 
 	wp_register_script( 'geocomplete', bbs_get_dir_url() . 'address/address-autocomplete.js', false, false, true );
 	wp_register_script( 'gplaces', 'https://maps.googleapis.com/maps/api/js?key='.bbs_get_maps_api().'&libraries=places&callback=initAutocomplete', array( 'geocomplete' ), false, true );
+	wp_register_style( 'flatpickr', bbs_get_dir_url() . 'flatpickr/flatpickr.css', false, false );
+	wp_register_script( 'flatpickr', bbs_get_dir_url() . 'flatpickr/flatpickr.js', false, false, true );
+	wp_add_inline_script ( 'flatpickr', 'document.getElementById("flatpickr").flatpickr();' );
 }
