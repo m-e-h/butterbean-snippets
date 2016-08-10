@@ -1,10 +1,10 @@
 <?php
 /**
-* Address control class for ButterBean.
-*/
+ * Address control class for ButterBean.
+ */
 
-if ( ! class_exists( 'ButterBean_Control' ) )
-	return;
+if ( ! class_exists( 'ButterBean_Control' ) ) {
+	return; }
 
 class ButterBean_Control_Address extends ButterBean_Control {
 
@@ -45,15 +45,20 @@ class ButterBean_Control_Address extends ButterBean_Control {
 	}
 
 	public function get_template() {
-		wp_enqueue_script( 'address_scripts' );
-		wp_enqueue_script( 'leaflet_js' );
-		wp_enqueue_style( 'leaflet_styles' );
-		?>
+		wp_enqueue_script( 'gplaces' ); ?>
+
+		<?php if ( get_theme_mod( 'google_maps_api' ) ) : ?>
+			<p class="form-group">
+				<input id="autocomplete" class="widefat" placeholder="Begin typing your address" onFocus="geolocate()" type="text"></input>
+			</p>
+		<?php else : ?>
+			<p><code><span class="dashicons dashicons-info"></span> To use the address autofill and geolocation features, enter your Google Maps API key in the "Owner Info and APIs" Customizer control.</code></p>
+		<?php endif; ?>
 
 		<p class="form-group">
 			<label>
 				<span class="butterbean-label">{{ data.street.label }}</span>
-				<input type="text" id="form-address" value="{{ data.street.value }}" name="{{ data.street.field_name }}" />
+				<input type="text" id="address1" value="{{ data.street.value }}" name="{{ data.street.field_name }}" />
 			</label>
 		</p>
 
@@ -61,31 +66,32 @@ class ButterBean_Control_Address extends ButterBean_Control {
 			<p class="form-group">
 				<label>
 					<span class="butterbean-label">{{ data.city.label }}</span>
-					<input type="text" id="form-city" value="{{ data.city.value }}" name="{{ data.city.field_name }}" />
+					<input type="text" id="locality" value="{{ data.city.value }}" name="{{ data.city.field_name }}" />
 				</label>
 			</p>
 			<p class="form-group">
 				<label>
 					<span class="butterbean-label">{{ data.state.label }}</span>
-					<input type="text" id="form-state" maxlength="2" value="{{ data.state.value }}" name="{{ data.state.field_name }}" />
+					<input type="text" id="administrative_area_level_1" maxlength="2" value="{{ data.state.value }}" name="{{ data.state.field_name }}" />
 				</label>
 			</p>
 			<p class="form-group">
 				<label>
 					<span class="butterbean-label">{{ data.zip.label }}</span>
-					<input type="text" id="form-zip" pattern="[0-9]*" maxlength="5" value="{{ data.zip.value }}" name="{{ data.zip.field_name }}" />
+					<input type="text" id="postal_code" pattern="[0-9]*" maxlength="5" value="{{ data.zip.value }}" name="{{ data.zip.field_name }}" />
 				</label>
 			</p>
 		</div>
 
 		<div class="row">
 
-			<div id="map_canvas"></div>
+			<iframe width="100%" height="350" frameborder="0" style="border:0"
+src="https://www.google.com/maps/embed/v1/streetview?location={{ data.lat_lon.value }}&key=<?php echo bbs_get_maps_api(); ?>"></iframe>
 
 			<p class="form-group">
 				<label>
 					<span class="butterbean-label">{{ data.lat_lon.label }}</span>
-					<input id="form-geo" name="{{ data.lat_lon.field_name }}" type="text" value="{{ data.lat_lon.value }}">
+					<input id="geolocation" name="{{ data.lat_lon.field_name }}" type="text" placeholder="geo-coordinates" class="u-1of1" value="{{ data.lat_lon.value }}">
 				</label>
 			</p>
 		</div>

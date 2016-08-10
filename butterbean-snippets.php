@@ -14,6 +14,8 @@ Text Domain: butterbean-snippets
 add_action( 'admin_enqueue_scripts', 'bbs_scripts' );
 
 $dir_path = bbs_get_dir_path();
+
+require_once $dir_path . 'address/customizer.php';
 require_once $dir_path . 'address/metaboxes.php';
 require_once $dir_path . 'oembed/class-control-oembed.php';
 
@@ -25,40 +27,13 @@ function bbs_get_dir_url() {
 	return plugin_dir_url( __FILE__ );
 }
 
+function bbs_get_maps_api() {
+	return get_theme_mod( 'google_maps_api' );
+}
+
 // Register Script
 function bbs_scripts() {
 
-	wp_register_style( 'leaflet_styles', 
-	'https://cdn.jsdelivr.net/leaflet/1/leaflet.css',
-	false, false
-	);
-
-	wp_register_script( 'address_scripts',
-		'https://cdn.jsdelivr.net/places.js/1/places.min.js',
-		false, false, false
-	);
-
-	wp_register_script( 'leaflet_js',
-		'https://cdn.jsdelivr.net/leaflet/1/leaflet.js',
-		false, false, false
-	);
-
-	wp_add_inline_script( 'address_scripts',
-		'(function() {
-		  var placesAutocomplete = places({
-		    container: document.querySelector("#form-address"),
-		    type: "address",
-		    templates: {
-		      value: function(suggestion) {
-		        return suggestion.name;
-		      }
-		    }
-		  });
-		  placesAutocomplete.on("change", function resultSelected(e) {
-		    document.querySelector("#form-city").value = e.suggestion.city || "";
-		    document.querySelector("#form-zip").value = e.suggestion.postcode || "";
-			document.querySelector("#form-geo").value = e.suggestion.latlng || "";
-		  });
-		})();'
-	);
+	wp_register_script( 'geocomplete', bbs_get_dir_url() . 'address/address-autocomplete.js', false, false, true );
+	wp_register_script( 'gplaces', 'https://maps.googleapis.com/maps/api/js?key='.bbs_get_maps_api().'&libraries=places&callback=initAutocomplete', array( 'geocomplete' ), false, true );
 }
