@@ -21,7 +21,7 @@ class ButterBean_Control_FlatPickr extends ButterBean_Control {
 
 		<div class="row">
 			<div class="u-1of1 u-p1">
-				<input type="text" id="flatpickr" class="flatpickr-input" placeholder="Date" value="{{ data.value }}" name="{{ data.field_name }}" data-date-format="m/d/Y">
+				<input type="text" id="flatpickr" class="flatpickr-input" placeholder="Date" value="{{ data.value }}" name="{{ data.field_name }}" data-enable-time=true>
 			</div>
 		</div>
 		<?php }
