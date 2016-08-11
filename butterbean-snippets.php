@@ -16,9 +16,7 @@ add_action( 'admin_enqueue_scripts', 'bbs_scripts' );
 $dir_path = bbs_get_dir_path();
 
 require_once $dir_path . 'address/customizer.php';
-require_once $dir_path . 'address/metaboxes.php';
-require_once $dir_path . 'flatpickr/metaboxes.php';
-require_once $dir_path . 'oembed/class-control-oembed.php';
+require_once $dir_path . 'events/metaboxes.php';
 
 function bbs_get_dir_path() {
 	return plugin_dir_path( __FILE__ );

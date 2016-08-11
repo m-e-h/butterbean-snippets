@@ -24,6 +24,10 @@ class ButterBean_Control_FlatPickr extends ButterBean_Control {
 
 		$this->json['date_format'] = $this->date_format;
 
+		$this->json['min_date'] = $this->min_date;
+
+		$this->json['max_date'] = $this->max_date;
+
 		$this->json['value'] = esc_html( $this->get_value() );
 	}
 
@@ -37,7 +41,7 @@ class ButterBean_Control_FlatPickr extends ButterBean_Control {
 		<div class="row">
 			<p class="flatpickr input-group">
 				<span class="butterbean-label">{{ data.label }}</span>
-				<input type="text" id="{{ data.field_name }}" class="flatpickr-input" placeholder="Date" value="{{ data.value }}" name="{{ data.field_name }}" data-enable-time="{{ data.show_time }}">
+				<input type="text" id="{{ data.field_name }}" class="flatpickr-input" placeholder="Date" value="{{ data.value }}" name="{{ data.field_name }}" data-enable-time="{{ data.show_time }}" data-min-date="{{ data.min_date }}" data-date-format="{{ data.date_format }}">
 			</p>
 		</div>
 		<?php }

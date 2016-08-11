@@ -47,7 +47,7 @@ class ButterBean_Control_Oembed extends ButterBean_Control {
 		</p>
 <div class="FlexEmbed arch-video-embed">
   <div class="FlexEmbed-ratio FlexEmbed-ratio--16by9"></div>
-	<?php echo wp_oembed_get( esc_url( $this->get_value() ) ); ?>
+	<?php echo wp_oembed_get( esc_url( $this->get_value() ), array('height'=>250) ); ?>
 </div>
 <?php	}
 }
