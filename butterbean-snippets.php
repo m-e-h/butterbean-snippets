@@ -37,4 +37,6 @@ function bbs_scripts() {
 	wp_register_script( 'gplaces', 'https://maps.googleapis.com/maps/api/js?key='.bbs_get_maps_api().'&libraries=places&callback=initAutocomplete', array( 'geocomplete' ), false, true );
 	wp_register_style( 'flatpickr', bbs_get_dir_url() . 'flatpickr/flatpickr.dark.min.css', false, false );
 	wp_register_script( 'flatpickr', bbs_get_dir_url() . 'flatpickr/flatpickr.js', false, false, true );
+	wp_register_style( 'select2', bbs_get_dir_url() . 'post-select/select2.min.css', false, false );
+	wp_register_script( 'select2', bbs_get_dir_url() . 'post-select/select2.min.js', array( 'jquery' ), false, true );
 }
