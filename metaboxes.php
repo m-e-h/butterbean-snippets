@@ -27,13 +27,16 @@ if ( ! class_exists( 'Bbs_Events' ) ) {
 				return;
 
 			$dir_path = bbs_get_dir_path();
+
+			require_once $dir_path . 'settings/class-setting-value-array.php';
 			require_once $dir_path . 'flatpickr/class-control-flatpickr.php';
 			require_once $dir_path . 'address/class-control-address.php';
 			require_once $dir_path . 'contact/class-control-contact.php';
 			require_once $dir_path . 'oembed/class-control-oembed.php';
+			require_once $dir_path . 'post-select/class-control-post-select.php';
 
 			$butterbean->register_manager(
-				'be_events',
+				'bbs_events',
 				array(
 				'label'     => 'Event Info',
 				'post_type' => array( 'events', 'post' ),
@@ -42,7 +45,7 @@ if ( ! class_exists( 'Bbs_Events' ) ) {
 				)
 			);
 
-			$manager = $butterbean->get_manager( 'be_events' );
+			$manager = $butterbean->get_manager( 'bbs_events' );
 
 			$manager->register_section(
 				'be_date_fields',
@@ -158,6 +161,39 @@ if ( ! class_exists( 'Bbs_Events' ) ) {
 				)
 			);
 
+			$manager->register_section(
+				'bbs_post_select_fields',
+				array(
+					'label' => 'Post Select',
+					'icon'  => 'dashicons-welcome-add-page'
+				)
+			);
+
+			$manager->register_control(
+				new ButterBean_Control_PostSelect(
+					$manager,
+					'bbs_attached_post',
+					array(
+						'type'        => 'post_select',
+						'section'     => 'bbs_post_select_fields',
+						'label'       => 'Select Post',
+						'choices'     => array(
+							''         => '',
+							'choice_x' => 'Choice X',
+							'choice_y' => 'Choice Y',
+							'choice_z' => 'Choice Z'
+						)
+					)
+				)
+			);
+
+			$manager->register_setting(
+				new Doc_Setting_ValueArray(
+					$manager,
+					'bbs_attached_post',
+					array( 'sanitize_callback' => 'sanitize_key' )
+				)
+			);
 
 			$manager->register_setting(
 				'bbs_oembed',

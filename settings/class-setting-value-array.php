@@ -2,7 +2,6 @@
 /**
  * Setting class for storing multiple post meta values for a single key.
  */
-
  if ( ! class_exists( 'ButterBean_Setting' ) ) {
  	return; }
 
