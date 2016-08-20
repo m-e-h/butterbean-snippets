@@ -43,7 +43,6 @@ class ButterBean_Control_PostSelect extends ButterBean_Control {
 
 		wp_enqueue_style( 'select2' );
 		wp_enqueue_script( 'select2' );
-		wp_add_inline_script ( 'select2', $this->bbs_get_select2_script() );
 		?>
 
 		<div class="row">
@@ -60,19 +59,13 @@ class ButterBean_Control_PostSelect extends ButterBean_Control {
 
 					<# _.each( data.choices, function( label, choice ) { #>
 
-						<option value="{{ choice }}" <# if ( -1 !== _.indexOf( data.value, choice ) ) { #> selected="selected" <# } #>>{{ label }}</option>
+						<option value="{{ choice }}" <# if ( -1 !== _.indexOf( data.value, choice ) ) { #> selected="selected" <# } #>>
+							{{ label }}
+						</option>
 
 					<# } ) #>
 				</select>
 			</label>
 		</div>
 		<?php }
-
-
-	/**
-	 * @return string
-	 */
-	public function bbs_get_select2_script() {
-		return "jQuery('.bbs-select-multiple').select2();";
-	}
 }

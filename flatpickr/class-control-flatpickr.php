@@ -31,7 +31,6 @@ class ButterBean_Control_FlatPickr extends ButterBean_Control {
 
 		wp_enqueue_style( 'flatpickr' );
 		wp_enqueue_script( 'flatpickr' );
-		wp_add_inline_script ( 'flatpickr', $this->bbs_get_flatpickr_script() );
 		?>
 
 		<div class="row">
@@ -42,11 +41,4 @@ class ButterBean_Control_FlatPickr extends ButterBean_Control {
 		</div>
 		<?php }
 
-
-	/**
-	 * @return string
-	 */
-	public function bbs_get_flatpickr_script() {
-		return "document.querySelectorAll('.flatpickr-input').flatpickr();";
-	}
 }
