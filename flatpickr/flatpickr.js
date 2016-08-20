@@ -33,17 +33,22 @@ function Flatpickr(element, config) {
 		self.setDate = setDate;
 		self.toggle = toggle;
 
-		if (!self.isMobile) {
-			build();
-			bind();
-		} else {
+		if (self.isMobile && !self.config.disableMobile) {
 			bind();
 			setupMobile();
+		} else {
+			build();
+			bind();
 		}
 
 		if (self.selectedDateObj) updateValue();
 
 		triggerEvent("Ready");
+	}
+
+	function updateTime(e) {
+		timeWrapper(e);
+		updateValue(e);
 	}
 
 	function bind() {
@@ -77,7 +82,7 @@ function Flatpickr(element, config) {
 
 			self.currentYearElement.addEventListener("wheel", yearScroll);
 			self.currentYearElement.addEventListener("focus", function () {
-				return self.currentYearElement.select();
+				self.currentYearElement.select();
 			});
 
 			self.currentYearElement.addEventListener("input", function (event) {
@@ -91,10 +96,6 @@ function Flatpickr(element, config) {
 		}
 
 		if (self.config.enableTime) {
-			var updateTime = function updateTime(e) {
-				timeWrapper(e);
-				updateValue(e);
-			};
 			self.timeContainer.addEventListener("wheel", updateTime);
 			self.timeContainer.addEventListener("wheel", debounce(function () {
 				return triggerEvent("Change");
@@ -109,7 +110,7 @@ function Flatpickr(element, config) {
 			});
 
 			if (self.secondElement) self.secondElement.addEventListener("focus", function () {
-				return self.minuteElement.select();
+				return self.secondElement.select();
 			});
 
 			if (self.amPM) self.amPM.addEventListener("click", updateTime);
@@ -173,7 +174,7 @@ function Flatpickr(element, config) {
 		for (; dayNumber <= prevMonthDays; dayNumber++) {
 			var curDate = new Date(self.currentYear, self.currentMonth - 1, dayNumber, 0, 0, 0, 0, 0),
 			    dateIsEnabled = isEnabled(curDate),
-			    dayElem = createElement("span", "flatpickr-day " + (dateIsEnabled ? "prevMonthDay" : "disabled"), dayNumber);
+			    dayElem = createElement("span", "flatpickr-day prevMonthDay" + (dateIsEnabled ? "" : " disabled"), dayNumber);
 
 			if (dateIsEnabled) dayElem.tabIndex = 0;
 
@@ -197,7 +198,10 @@ function Flatpickr(element, config) {
 
 				if (equalDates(currentDate, new Date())) dayElement.classList.add("today");
 
-				if (self.selectedDateObj && equalDates(currentDate, self.selectedDateObj)) dayElement.classList.add("selected");
+				if (self.selectedDateObj && equalDates(currentDate, self.selectedDateObj)) {
+					dayElement.classList.add("selected");
+					self.selectedDateElem = dayElement;
+				}
 			}
 
 			days.appendChild(dayElement);
@@ -207,7 +211,7 @@ function Flatpickr(element, config) {
 		for (var dayNum = daysInMonth + 1; dayNum <= 42 - firstOfMonth; dayNum++) {
 			var _curDate = new Date(self.currentYear, self.currentMonth + 1, dayNum % daysInMonth, 0, 0, 0, 0, 0),
 			    _dateIsEnabled = isEnabled(_curDate),
-			    _dayElement = createElement("span", _dateIsEnabled ? "nextMonthDay flatpickr-day" : "flatpickr-day disabled", dayNum % daysInMonth);
+			    _dayElement = createElement("span", "flatpickr-day nextMonthDay" + (_dateIsEnabled ? "" : " disabled"), dayNum % daysInMonth);
 
 			if (self.config.weekNumbers && dayNum % 7 === 1) {
 				self.weekNumbers.insertAdjacentHTML("beforeend", "<span class='disabled flatpickr-day'>" + self.getWeek(_curDate) + "</span>");
@@ -437,23 +441,30 @@ function Flatpickr(element, config) {
 				break;
 
 			case 37:
-				changeMonth(-1);
+				if (e.target !== self.input & e.target !== self.altInput) changeMonth(-1);
 				break;
 
 			case 38:
 				e.preventDefault();
-				self.currentYear++;
-				self.redraw();
+
+				if (self.timeContainer.contains(e.target)) updateTime(e);else {
+					self.currentYear++;
+					self.redraw();
+				}
+
 				break;
 
 			case 39:
-				changeMonth(1);
+				if (e.target !== self.input & e.target !== self.altInput) changeMonth(1);
 				break;
 
 			case 40:
 				e.preventDefault();
-				self.currentYear--;
-				self.redraw();
+				if (self.timeContainer.contains(e.target)) updateTime(e);else {
+					self.currentYear--;
+					self.redraw();
+				}
+
 				break;
 
 			default:
@@ -486,7 +497,7 @@ function Flatpickr(element, config) {
 
 		if (!self.config.allowInput) {
 			(self.altInput || self.input).blur();
-			(self.config.noCalendar ? self.timeContainer : self.days).focus();
+			(self.config.noCalendar ? self.timeContainer : self.selectedDateObj ? self.selectedDateElem : self.days).focus();
 		}
 
 		(self.altInput || self.input).classList.add("active");
@@ -499,9 +510,11 @@ function Flatpickr(element, config) {
 
 	function parseConfig() {
 		self.config = self.instanceConfig;
+
 		Object.keys(self.element.dataset).forEach(function (k) {
-			return self.config[k] = self.element.dataset[k];
+			return self.config[k] = typeof Flatpickr.defaultConfig[k] === "boolean" ? self.element.dataset[k] !== "false" : self.element.dataset[k];
 		});
+
 		if (!self.config.dateFormat && self.config.enableTime) {
 			self.config.dateFormat = Flatpickr.defaultConfig.dateFormat;
 			if (self.config.noCalendar) {
@@ -589,14 +602,13 @@ function Flatpickr(element, config) {
 		e.preventDefault();
 		e.stopPropagation();
 
-		if (self.config.allowInput && e.target === (self.altInput || self.input) && e.which === 13) self.setDate((self.altInput || self.input).value);else if (e.target.classList.contains("flatpickr-day") && !e.target.classList.contains("disabled")) {
+		if (self.config.allowInput && (e.target === self.altInput || e.target === self.input) && e.which === 13) self.setDate((self.altInput || self.input).value);else if (e.target.classList.contains("flatpickr-day") && !e.target.classList.contains("disabled")) {
 			var isPrevMonthDay = e.target.classList.contains("prevMonthDay"),
-			    isNextMonthDay = e.target.classList.contains("nextMonthDay"),
-			    monthNum = self.currentMonth - isPrevMonthDay + isNextMonthDay;
+			    isNextMonthDay = e.target.classList.contains("nextMonthDay");
 
 			if (isPrevMonthDay || isNextMonthDay) changeMonth(+isNextMonthDay - isPrevMonthDay);
 
-			self.selectedDateObj = new Date(self.currentYear, monthNum, e.target.innerHTML);
+			self.selectedDateObj = parseDate(new Date(self.currentYear, self.currentMonth, e.target.innerHTML));
 
 			updateValue(e);
 			buildDays();
@@ -616,7 +628,7 @@ function Flatpickr(element, config) {
 		if (date instanceof Date && date.getTime()) {
 			self.selectedDateObj = date;
 			jumpToDate(self.selectedDateObj);
-			updateValue();
+			updateValue(false);
 
 			if (triggerChange) triggerEvent("Change");
 		} else (self.altInput || self.input).value = "";
@@ -774,8 +786,7 @@ function Flatpickr(element, config) {
 		var inputType = self.config.enableTime ? self.config.noCalendar ? "time" : "datetime-local" : "date";
 
 		self.mobileInput = createElement("input", "flatpickr-input");
-		self.mobileInput.type = inputType;
-
+		self.mobileInput.step = "any";
 		self.mobileInput.tabIndex = -1;
 		self.mobileInput.type = inputType;
 
@@ -818,32 +829,41 @@ function Flatpickr(element, config) {
 		self.currentYearElement.value = self.currentYear;
 	}
 
-	function updateValue(e) {
+	function updateValue() {
+		var readTimeInput = arguments.length <= 0 || arguments[0] === undefined ? true : arguments[0];
+
 		if (self.config.noCalendar && !self.selectedDateObj)
 			// picking time only and method triggered from picker
 			self.selectedDateObj = new Date();else if (!self.selectedDateObj) return;
 
-		if (e && e.target !== self.hourElement && e.target !== self.minuteElement) e.target.blur();
-
 		if (self.config.enableTime && !self.isMobile) {
-			// update time
-			var hours = parseInt(self.hourElement.value, 10) || 0,
+			var hours = void 0,
+			    minutes = void 0,
 			    seconds = void 0;
 
-			var minutes = (60 + (parseInt(self.minuteElement.value, 10) || 0)) % 60;
+			if (readTimeInput) {
+				// update time
+				hours = parseInt(self.hourElement.value, 10) || 0;
 
-			if (self.config.enableSeconds) seconds = (60 + parseInt(self.secondElement.value, 10) || 0) % 60;
+				minutes = (60 + (parseInt(self.minuteElement.value, 10) || 0)) % 60;
 
-			if (!self.config.time_24hr)
-				// the real number of hours for the date object
-				hours = hours % 12 + 12 * (self.amPM.innerHTML === "PM");
+				if (self.config.enableSeconds) seconds = (60 + parseInt(self.secondElement.value, 10) || 0) % 60;
 
-			self.selectedDateObj.setHours(hours, minutes, seconds === undefined ? self.selectedDateObj.getSeconds() : seconds);
+				if (!self.config.time_24hr)
+					// the real number of hours for the date object
+					hours = hours % 12 + 12 * (self.amPM.innerHTML === "PM");
+
+				self.selectedDateObj.setHours(hours, minutes, seconds || 0, 0);
+			} else {
+				hours = self.selectedDateObj.getHours();
+				minutes = self.selectedDateObj.getMinutes();
+				seconds = self.selectedDateObj.getSeconds();
+			}
 
 			self.hourElement.value = pad(!self.config.time_24hr ? (12 + hours) % 12 + 12 * (hours % 12 === 0) : hours);
 			self.minuteElement.value = pad(minutes);
 
-			if (seconds !== undefined) self.secondElement.value = pad(seconds);
+			if (self.secondElement !== undefined) self.secondElement.value = pad(seconds);
 		}
 
 		self.input.value = formatDate(self.config.dateFormat, self.selectedDateObj);
@@ -899,9 +919,10 @@ function Flatpickr(element, config) {
 	function timeWrapper(e) {
 		e.preventDefault();
 
+		if (e && e.type !== "keydown") e.target.blur();
+
 		if (e.target.className === "flatpickr-am-pm") {
 			e.target.textContent = ["AM", "PM"][e.target.textContent === "AM" | 0];
-			e.target.blur();
 			e.stopPropagation();
 			return;
 		}
@@ -913,7 +934,7 @@ function Flatpickr(element, config) {
 
 		var newValue = value;
 
-		if (e.type === "wheel") newValue = value + step * Math.max(-1, Math.min(1, e.wheelDelta || -e.deltaY));
+		if (e.type === "wheel") newValue = value + step * Math.max(-1, Math.min(1, e.wheelDelta || -e.deltaY));else if (e.type === "keydown") newValue = value + step * (e.which === 38 ? 1 : -1);
 
 		if (newValue <= min) newValue = max - step;else if (newValue >= max) newValue = min + step;
 
@@ -1004,6 +1025,9 @@ Flatpickr.defaultConfig = {
 
 	// step size used when scrolling/incrementing the minute element
 	minuteIncrement: 5,
+
+	// disable native mobile datetime input support
+	disableMobile: false,
 
 	// onChange callback when user selects a date or time
 	onChange: null, // function (dateObj, dateStr) {}
