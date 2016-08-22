@@ -8,10 +8,6 @@ var componentForm = {
 };
 
 function initAutocomplete() {
-	var domReady = function(callback) {
-		document.readyState === "interactive" ||
-		document.readyState === "complete" ? callback() : document.addEventListener("DOMContentLoaded", callback);
-	};
 
   autocomplete = new google.maps.places.Autocomplete(
 	  (document.getElementById('autocomplete')),
