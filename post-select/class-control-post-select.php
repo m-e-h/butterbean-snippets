@@ -32,12 +32,15 @@ class ButterBean_Control_PostSelect extends ButterBean_Control {
 	 * @access public
 	 * @return void
 	 */
-	public function to_json() {
-		parent::to_json();
+	 public function to_json() {
 
-		$this->json['value'] = (array) $this->get_value();
+ 		parent::to_json();
 
-	}
+		$this->json['choices'] = $this->choices;
+
+ 		$this->json['value'] = (array) $this->get_value();
+
+ 	}
 
 	public function get_template() {
 
@@ -47,6 +50,7 @@ class ButterBean_Control_PostSelect extends ButterBean_Control {
 
 		<div class="row">
 			<label>
+
 				<# if ( data.label ) { #>
 					<span class="butterbean-label">{{ data.label }}</span>
 				<# } #>
@@ -55,15 +59,14 @@ class ButterBean_Control_PostSelect extends ButterBean_Control {
 					<span class="butterbean-description">{{{ data.description }}}</span>
 				<# } #>
 
-				<select {{{ data.attr }}} class="bbs-select-multiple" multiple="multiple">
+				<select {{{ data.attr }}} multiple="multiple" class="bbs-select-multiple">
 
 					<# _.each( data.choices, function( label, choice ) { #>
 
-						<option value="{{ choice }}" <# if ( -1 !== _.indexOf( data.value, choice ) ) { #> selected="selected" <# } #>>
-							{{ label }}
-						</option>
+						<option value="{{ choice }}" <# if ( data.value === choice ) { #> selected="selected" <# } #>>{{ label }}</option>
 
 					<# } ) #>
+
 				</select>
 			</label>
 		</div>

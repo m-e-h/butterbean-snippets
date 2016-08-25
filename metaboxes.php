@@ -23,12 +23,12 @@ if ( ! class_exists( 'Bbs_Events' ) ) {
 		 */
 		public function register( $butterbean, $post_type ) {
 
-			if ( 'events' !== $post_type && 'post' !== $post_type )
-				return;
+			if ( 'events' !== $post_type && 'post' !== $post_type ) {
+				return; }
 
 			$dir_path = bbs_get_dir_path();
 
-			require_once $dir_path . 'settings/class-setting-value-array.php';
+			// require_once $dir_path . 'settings/class-setting-value-array.php';
 			require_once $dir_path . 'flatpickr/class-control-flatpickr.php';
 			require_once $dir_path . 'address/class-control-address.php';
 			require_once $dir_path . 'contact/class-control-contact.php';
@@ -41,7 +41,7 @@ if ( ! class_exists( 'Bbs_Events' ) ) {
 				'label'     => 'Event Info',
 				'post_type' => array( 'events', 'post' ),
 				'context'   => 'normal',
-				'priority'  => 'high'
+				'priority'  => 'high',
 				)
 			);
 
@@ -51,7 +51,7 @@ if ( ! class_exists( 'Bbs_Events' ) ) {
 				'be_date_fields',
 				array(
 					'label' => 'Date',
-					'icon'  => 'dashicons-calendar'
+					'icon'  => 'dashicons-calendar',
 				)
 			);
 
@@ -61,7 +61,7 @@ if ( ! class_exists( 'Bbs_Events' ) ) {
 					'type'        => 'checkbox',
 					'section'     => 'be_date_fields',
 					'label'       => 'All day event',
-					'description' => 'Example description.'
+					'description' => 'Example description.',
 				)
 			);
 
@@ -73,7 +73,7 @@ if ( ! class_exists( 'Bbs_Events' ) ) {
 						'type'        => 'flatpickr',
 						'section'     => 'be_date_fields',
 						'label'       => 'Start Date',
-						'description' => 'Example description.'
+						'description' => 'Example description.',
 					)
 				)
 			);
@@ -150,14 +150,14 @@ if ( ! class_exists( 'Bbs_Events' ) ) {
 			);
 
 			$manager->register_control(
-			new ButterBean_Control_Oembed(
-				$manager,
-				'bbs_oembed',
-				array(
+				new ButterBean_Control_Oembed(
+					$manager,
+					'bbs_oembed',
+					array(
 					'type'        => 'oembed',
 					'section'     => 'bbs_oembed_fields',
 					'label'       => 'Event Video',
-				)
+					)
 				)
 			);
 
@@ -165,7 +165,7 @@ if ( ! class_exists( 'Bbs_Events' ) ) {
 				'bbs_post_select_fields',
 				array(
 					'label' => 'Post Select',
-					'icon'  => 'dashicons-welcome-add-page'
+					'icon'  => 'dashicons-welcome-add-page',
 				)
 			);
 
@@ -181,14 +181,14 @@ if ( ! class_exists( 'Bbs_Events' ) ) {
 							''         => '',
 							'choice_x' => 'Choice X',
 							'choice_y' => 'Choice Y',
-							'choice_z' => 'Choice Z'
-						)
+							'choice_z' => 'Choice Z',
+						),
 					)
 				)
 			);
 
 			$manager->register_setting(
-				new Doc_Setting_ValueArray(
+				new ButterBean_Setting_Array(
 					$manager,
 					'bbs_attached_post',
 					array( 'sanitize_callback' => 'sanitize_key' )
