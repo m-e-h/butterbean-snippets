@@ -26,6 +26,21 @@ class ButterBean_Control_PostSelect extends ButterBean_Control {
 	public $type = 'post_select';
 
 	/**
+	 * Custom field name.  We need to add `[]` at the end of the name so that it
+	 * accepts an array of values.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 * @return string
+	 */
+	public function get_field_name( $setting = 'default' ) {
+
+		$name = parent::get_field_name( $setting );
+
+		return sprintf( '%s[]', $name );
+	}
+
+	/**
 	 * Adds custom data to the json array. This data is passed to the Underscore template.
 	 *
 	 * @since  1.0.0
@@ -63,7 +78,7 @@ class ButterBean_Control_PostSelect extends ButterBean_Control {
 
 					<# _.each( data.choices, function( label, choice ) { #>
 
-						<option value="{{ choice }}" <# if ( data.value === choice ) { #> selected="selected" <# } #>>{{ label }}</option>
+						<option value="{{ choice }}" <# if ( -1 !== _.indexOf( data.value, choice ) ) { #> selected="selected" <# } #>>{{ label }}</option>
 
 					<# } ) #>
 
