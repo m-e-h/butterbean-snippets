@@ -74,7 +74,7 @@ class ButterBean_Control_PostSelect extends ButterBean_Control {
 					<span class="butterbean-description">{{{ data.description }}}</span>
 				<# } #>
 
-				<select {{{ data.attr }}} multiple="multiple" class="bbs-select-multiple">
+				<select {{{ data.attr }}} multiple="multiple" style="width: 50%" class="bbs-select-multiple">
 
 					<# _.each( data.choices, function( label, choice ) { #>
 
